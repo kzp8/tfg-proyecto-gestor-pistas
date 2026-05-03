@@ -1,12 +1,15 @@
-const express = require('express');
-const mysql = require('mysql2');
-const path = require('path');
-const app = express();
+// Importación de módulos necesarios para el servidor
+const express = require('express'); // Framework web para Node.js
+const mysql = require('mysql2');    // Conector para base de datos MySQL
+const path = require('path');       // Utilidad para manejar rutas de archivos
+const app = express();              // Inicialización de la aplicación Express
 
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+// Middlewares de configuración
+app.use(express.json()); // Permite a la aplicación entender datos en formato JSON (para peticiones POST/PUT)
+app.use(express.static(path.join(__dirname, 'public'))); // Sirve los archivos estáticos (HTML, CSS, JS) de la carpeta 'public'
 
-// Configuración del Pool de Conexiones (Más estable que una conexión única)
+// Configuración del Pool de Conexiones a la Base de Datos
+// El uso de un Pool es más eficiente y estable que abrir y cerrar conexiones individuales
 const db = mysql.createPool({
     host: 'localhost',
     user: 'root',
@@ -17,17 +20,22 @@ const db = mysql.createPool({
     queueLimit: 0
 });
 
+// Mensaje de confirmación de inicialización de la base de datos
 console.log("✅ Sistema de base de datos (Pool) inicializado");
 
-// --- RUTAS DE USUARIO ---
+// --- RUTAS DE GESTIÓN DE USUARIOS ---
 
-// Registro
+/**
+ * Ruta para el registro de nuevos usuarios.
+ * Recibe: nombre, email y password.
+ */
 app.post('/api/registrar', (req, res) => {
     const { nombre, email, password } = req.body;
     const sql = 'INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, "user")';
 
     db.query(sql, [nombre, email, password], (err, result) => {
         if (err) {
+            // Manejo de error por duplicidad de correo electrónico
             if (err.code === 'ER_DUP_ENTRY') {
                 return res.status(400).json({ mensaje: "El correo ya existe" });
             }
@@ -37,7 +45,10 @@ app.post('/api/registrar', (req, res) => {
     });
 });
 
-// Login
+/**
+ * Ruta para el inicio de sesión (Login).
+ * Verifica las credenciales y devuelve los datos básicos del usuario.
+ */
 app.post('/api/login', (req, res) => {
     const { email, password } = req.body;
     const sql = 'SELECT * FROM usuarios WHERE email = ?';
@@ -47,10 +58,12 @@ app.post('/api/login', (req, res) => {
         if (results.length === 0) return res.status(401).json({ mensaje: "Usuario no encontrado" });
 
         const usuario = results[0];
+        // Verificación básica de contraseña (en producción debería usarse hashing como bcrypt)
         if (usuario.password !== password) {
             return res.status(401).json({ mensaje: "Contraseña incorrecta" });
         }
 
+        // Respuesta con datos del usuario si el login es exitoso
         res.json({
             mensaje: "Login correcto",
             usuario: { id: usuario.id, nombre: usuario.nombre, rol: usuario.rol }
@@ -58,8 +71,11 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// --- RUTAS DE PISTAS (GENERAL) ---
+// --- RUTAS DE GESTIÓN DE PISTAS (GENERAL) ---
 
+/**
+ * Obtiene la lista completa de todas las pistas registradas en el sistema.
+ */
 app.get('/api/pistas', (req, res) => {
     const sql = 'SELECT * FROM pistas';
     db.query(sql, (err, results) => {
@@ -71,9 +87,12 @@ app.get('/api/pistas', (req, res) => {
     });
 });
 
-// --- NUEVAS RUTAS DE ADMINISTRACIÓN (CRUD) ---
+// --- RUTAS DE ADMINISTRACIÓN DE PISTAS (CRUD) ---
 
-// 1. Crear una nueva pista
+/**
+ * Crea una nueva pista deportiva (Función exclusiva de Admin).
+ * Estado por defecto: 1 (Activa).
+ */
 app.post('/api/pistas/crear', (req, res) => {
     const { nombre, tipo } = req.body;
     const sql = 'INSERT INTO pistas (nombre, tipo, estado) VALUES (?, ?, 1)';
@@ -84,7 +103,9 @@ app.post('/api/pistas/crear', (req, res) => {
     });
 });
 
-// 2. Cambiar estado (Activa/Mantenimiento)
+/**
+ * Actualiza el estado de una pista (Activa/Mantenimiento).
+ */
 app.put('/api/pistas/estado/:id', (req, res) => {
     const { id } = req.params;
     const { nuevoEstado } = req.body;
@@ -96,7 +117,9 @@ app.put('/api/pistas/estado/:id', (req, res) => {
     });
 });
 
-// 3. Eliminar una pista definitivamente
+/**
+ * Elimina definitivamente una pista del sistema.
+ */
 app.delete('/api/pistas/eliminar/:id', (req, res) => {
     const { id } = req.params;
     const sql = 'DELETE FROM pistas WHERE id = ?';
@@ -107,7 +130,9 @@ app.delete('/api/pistas/eliminar/:id', (req, res) => {
     });
 });
 
-// 4. NUEVO: Editar nombre y tipo de una pista
+/**
+ * Edita el nombre y el tipo de deporte de una pista existente.
+ */
 app.put('/api/pistas/editar/:id', (req, res) => {
     const { id } = req.params;
     const { nombre, tipo } = req.body;
@@ -119,12 +144,15 @@ app.put('/api/pistas/editar/:id', (req, res) => {
     });
 });
 
-// --- RUTAS DE RESERVAS ---
+// --- RUTAS DE GESTIÓN DE RESERVAS ---
 
-// Obtener reservas de una fecha específica para el panel de administración
+/**
+ * Obtiene las reservas de una fecha específica para visualización en el panel de administrador.
+ */
 app.get('/api/admin/reservas/fecha/:fecha', (req, res) => {
     const { fecha } = req.params;
     
+    // Consulta con JOIN para obtener nombres de pista y usuario
     const sql = `
         SELECT r.id, r.hora_inicio, r.hora_fin, p.nombre AS pista_nombre, u.nombre AS usuario_nombre
         FROM reservas r
@@ -140,11 +168,15 @@ app.get('/api/admin/reservas/fecha/:fecha', (req, res) => {
     });
 });
 
-// Obtener estadísticas globales con filtros de tiempo para el panel de administración
+/**
+ * Obtiene estadísticas de uso del polideportivo.
+ * Soporta filtros: 'dia', 'semana', 'mes' o total.
+ */
 app.get('/api/admin/estadisticas', (req, res) => {
     const { periodo } = req.query; // dia, semana, mes, total
     let filtroFecha = "";
 
+    // Construcción dinámica del filtro de fecha según el periodo solicitado
     if (periodo === 'dia') {
         filtroFecha = "WHERE r.fecha >= CURDATE()";
     } else if (periodo === 'semana') {
@@ -153,6 +185,7 @@ app.get('/api/admin/estadisticas', (req, res) => {
         filtroFecha = "WHERE r.fecha >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)";
     }
 
+    // Queries para obtener: Total de reservas, Deporte más jugado y Pista más reservada
     const queryTotal = `SELECT COUNT(*) as total FROM reservas r ${filtroFecha}`;
     const queryDeporte = `
         SELECT p.tipo, COUNT(r.id) as cantidad 
@@ -167,6 +200,7 @@ app.get('/api/admin/estadisticas', (req, res) => {
         GROUP BY p.id ORDER BY cantidad DESC LIMIT 1
     `;
 
+    // Ejecución encadenada de las consultas estadísticas
     db.query(queryTotal, (errTotal, resTotal) => {
         if (errTotal) return res.status(500).json({ mensaje: "Error total" });
         
@@ -186,12 +220,14 @@ app.get('/api/admin/estadisticas', (req, res) => {
     });
 });
 
-// 1. Crear una nueva reserva
+/**
+ * Crea una nueva reserva validando horarios, duración y disponibilidad.
+ */
 app.post('/api/reservas', (req, res) => {
     const { id_usuario, id_pista, fecha, hora_inicio, hora_fin } = req.body;
 
-    // Validación de formato y hora en punto
-    const horaInicioStr = hora_inicio.substring(0, 5); // formato "HH:MM"
+    // Validación: Las reservas deben ser en horas en punto (ej: 16:00, no 16:30)
+    const horaInicioStr = hora_inicio.substring(0, 5); 
     const horaFinStr = hora_fin.substring(0, 5);
 
     if (!horaInicioStr.endsWith(':00') || !horaFinStr.endsWith(':00')) {
@@ -200,15 +236,17 @@ app.post('/api/reservas', (req, res) => {
         });
     }
 
+    // Conversión a minutos para facilitar los cálculos de horario
     const inicioMinutos = parseInt(horaInicioStr.split(':')[0], 10) * 60;
     const finMinutos = parseInt(horaFinStr.split(':')[0], 10) * 60;
 
+    // Horarios de apertura y cierre (En minutos desde las 00:00)
     const aperturaManana = 8 * 60; // 08:00
     const cierreManana = 13 * 60; // 13:00
     const aperturaTarde = 15 * 60; // 15:00
     const cierreTarde = 22 * 60; // 22:00
 
-    // Comprobar si las horas están fuera del horario permitido
+    // Comprobación de que la reserva está dentro del horario comercial
     const esHorarioManana = (inicioMinutos >= aperturaManana && finMinutos <= cierreManana);
     const esHorarioTarde = (inicioMinutos >= aperturaTarde && finMinutos <= cierreTarde);
 
@@ -218,7 +256,7 @@ app.post('/api/reservas', (req, res) => {
         });
     }
 
-    // Validación de duración máxima (2 horas = 120 minutos)
+    // Validación: Duración máxima de 2 horas (120 minutos)
     const duracionReserva = finMinutos - inicioMinutos;
     if (duracionReserva > 120) {
         return res.status(400).json({
@@ -226,10 +264,8 @@ app.post('/api/reservas', (req, res) => {
         });
     }
 
-    // Verificar si ya existe una reserva que se solape (misma pista y fecha, y las horas se cruzan)
-
-    // Las horas se solapan si: (A_inicio < B_fin) Y (A_fin > B_inicio)
-    // Para simplificar la validación en MySQL:
+    // Verificación de disponibilidad: Buscar si hay solapamiento de horarios
+    // Se solapan si: (Inicio_A < Fin_B) Y (Fin_A > Inicio_B)
     const sqlCheckSimplified = `
         SELECT * FROM reservas 
         WHERE id_pista = ? AND fecha = ? 
@@ -243,7 +279,7 @@ app.post('/api/reservas', (req, res) => {
             return res.status(409).json({ mensaje: "La pista ya está reservada en ese horario" });
         }
 
-        // Si no hay solapamiento, crear reserva
+        // Si la pista está libre, se procede a insertar la reserva
         const sqlInsert = 'INSERT INTO reservas (id_usuario, id_pista, fecha, hora_inicio, hora_fin) VALUES (?, ?, ?, ?, ?)';
         db.query(sqlInsert, [id_usuario, id_pista, fecha, hora_inicio, hora_fin], (err, result) => {
             if (err) return res.status(500).json({ mensaje: "Error al crear la reserva" });
@@ -252,10 +288,12 @@ app.post('/api/reservas', (req, res) => {
     });
 });
 
-// 2. Obtener reservas de un usuario
+/**
+ * Obtiene el historial de reservas de un usuario específico.
+ */
 app.get('/api/reservas/usuario/:id', (req, res) => {
     const { id } = req.params;
-    // Hacemos JOIN con pistas para tener el nombre y tipo de pista
+    // JOIN con pistas para mostrar información detallada al usuario
     const sql = `
         SELECT r.id, r.fecha, r.hora_inicio, r.hora_fin, p.nombre AS pista_nombre, p.tipo AS pista_tipo
         FROM reservas r
@@ -270,7 +308,10 @@ app.get('/api/reservas/usuario/:id', (req, res) => {
     });
 });
 
-// Obtener reservas de una pista en una fecha concreta (para mostrar disponibilidad)
+/**
+ * Obtiene los horarios ocupados de una pista en una fecha dada.
+ * Útil para que el cliente sepa qué horas NO puede reservar.
+ */
 app.get('/api/reservas/:id_pista/:fecha', (req, res) => {
     const { id_pista, fecha } = req.params;
     const sql = 'SELECT hora_inicio, hora_fin FROM reservas WHERE id_pista = ? AND fecha = ? ORDER BY hora_inicio ASC';
@@ -280,7 +321,9 @@ app.get('/api/reservas/:id_pista/:fecha', (req, res) => {
     });
 });
 
-// 3. Cancelar una reserva
+/**
+ * Cancela (elimina) una reserva por su ID.
+ */
 app.delete('/api/reservas/:id', (req, res) => {
     const { id } = req.params;
     const sql = 'DELETE FROM reservas WHERE id = ?';
@@ -291,4 +334,5 @@ app.delete('/api/reservas/:id', (req, res) => {
     });
 });
 
+// Puesta en marcha del servidor en el puerto 3000
 app.listen(3000, () => console.log("Servidor SportLogix corriendo en puerto 3000"));

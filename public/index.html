@@ -2,10 +2,15 @@
 <html lang="es">
 
 <head>
+    <!-- Metadatos básicos y configuración de vista -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestor de Pistas - SPORTLOGIX</title>
+    
+    <!-- Carga de Tailwind CSS para el diseño -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Estilos personalizados específicos -->
     <style>
         .glass-effect {
             background: rgba(255, 255, 255, 0.9);
@@ -16,10 +21,11 @@
 
 <body class="bg-slate-50 font-sans text-slate-900">
 
+    <!-- BARRA DE NAVEGACIÓN PRINCIPAL -->
     <nav class="sticky top-0 z-50 bg-emerald-700 text-white shadow-md">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <!-- Botón Menú Móvil -->
+                <!-- Botón Menú Móvil (Solo visible en dispositivos pequeños) -->
                 <button id="btn-mobile-menu"
                     class="md:hidden text-white focus:outline-none hover:text-emerald-200 transition">
                     <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,6 +34,7 @@
                     </svg>
                 </button>
 
+                <!-- Logotipo de SportLogix -->
                 <div class="flex items-center gap-2">
                     <div class="bg-white p-1 rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-700" fill="none"
@@ -40,13 +47,15 @@
                 </div>
             </div>
 
-            <!-- Navegación Escritorio -->
+            <!-- Navegación para Escritorio -->
             <div class="hidden md:flex items-center gap-8 font-medium">
                 <a href="index.html" class="hover:text-emerald-200 transition">Inicio</a>
                 <a href="mis-reservas.html" class="hover:text-emerald-200 transition">Mis Reservas</a>
 
+                <!-- Contenedor dinámico para botones de administrador (inyectado por JS) -->
                 <div class="contenedor-admin"></div>
 
+                <!-- Información de Usuario y Logout -->
                 <div class="flex items-center gap-3">
                     <div
                         class="h-9 w-9 bg-emerald-800 rounded-full flex items-center justify-center border-2 border-emerald-400 shadow-inner">
@@ -58,7 +67,7 @@
             </div>
         </div>
 
-        <!-- Menú Móvil Desplegable -->
+        <!-- Menú Móvil Desplegable (Controlado por main.js) -->
         <div id="mobile-menu"
             class="md:hidden hidden bg-emerald-800 text-white px-6 py-4 space-y-4 shadow-inner border-t border-emerald-600/50">
             <a href="index.html" class="block hover:text-emerald-200 transition font-medium">Inicio</a>
@@ -78,8 +87,10 @@
         </div>
     </nav>
 
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="container mx-auto px-6 py-10">
 
+        <!-- Cabecera de bienvenida -->
         <div class="mb-12">
             <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">Gestor de Pistas Deportivas</h1>
             <p class="text-lg text-slate-600 mt-2">
@@ -88,13 +99,16 @@
             </p>
         </div>
 
+        <!-- SECCIÓN DE FILTROS DE BÚSQUEDA -->
         <section
             class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+            <!-- Filtro por fecha -->
             <div class="md:col-span-2">
                 <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Seleccionar Fecha de Juego</label>
                 <input type="date" id="filtro-fecha"
                     class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
             </div>
+            <!-- Filtro por tipo de deporte -->
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Deporte</label>
                 <select id="filtro-deporte"
@@ -105,6 +119,7 @@
                     <option value="Baloncesto">Baloncesto</option>
                 </select>
             </div>
+            <!-- Botón de acción -->
             <div class="flex items-end">
                 <button id="btn-buscar"
                     class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-200 transition transform hover:-translate-y-0.5">
@@ -113,11 +128,13 @@
             </div>
         </section>
 
+        <!-- LISTADO DE INSTALACIONES (Pistas) -->
         <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
             <span class="w-2 h-8 bg-emerald-500 rounded-full"></span>
             Instalaciones Disponibles
         </h2>
 
+        <!-- Contenedor donde se cargarán dinámicamente las tarjetas de las pistas mediante JavaScript -->
         <div id="contenedor-pistas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div class="col-span-full py-10 text-center text-slate-400 animate-pulse">
                 Buscando pistas disponibles en SportLogix...
@@ -126,6 +143,7 @@
 
     </main>
 
+    <!-- PIE DE PÁGINA -->
     <footer class="mt-20 py-10 border-t border-slate-200 bg-white">
         <div class="container mx-auto px-6 text-center text-slate-400 text-sm font-medium">
             <p>TFG Desarrollo de Aplicaciones Web</p>
@@ -133,7 +151,7 @@
         </div>
     </footer>
 
-    <!-- Modal de Reserva -->
+    <!-- MODAL DE CONFIRMACIÓN DE RESERVA (Oculto por defecto) -->
     <div id="modal-reserva"
         class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <div
@@ -142,14 +160,17 @@
             <p class="text-slate-500 mb-6" id="modal-pista-nombre">Cargando...</p>
 
             <form id="form-reserva" class="space-y-4">
+                <!-- Identificador oculto de la pista seleccionada -->
                 <input type="hidden" id="reserva-id-pista">
 
+                <!-- Campo de fecha -->
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1">Fecha</label>
                     <input type="date" id="reserva-fecha" required
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition">
                 </div>
 
+                <!-- Selección de franja horaria -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Hora Inicio</label>
@@ -179,14 +200,17 @@
                     </div>
                 </div>
 
+                <!-- Información de política de reservas -->
                 <p class="text-xs text-slate-500 italic mt-1 text-center leading-relaxed">
                     Las reservas tienen un máximo de <strong>2 horas</strong>. Para mayor duración contacta con
                     nosotros.<br>
                     <strong>Horario:</strong> 08:00 a 13:00 y 15:00 a 22:00.
                 </p>
 
+                <!-- Área de mensajes de error -->
                 <div id="reserva-error" class="hidden text-red-500 text-sm font-medium mt-2"></div>
 
+                <!-- Botones de acción del modal -->
                 <div class="flex gap-2 mt-8">
                     <button type="button" id="btn-ver-horarios"
                         class="flex-1 bg-sky-100 hover:bg-sky-200 text-sky-700 font-bold py-3 px-2 rounded-xl transition text-xs">
@@ -205,7 +229,7 @@
         </div>
     </div>
 
-    <!-- Modal de Horarios Ocupados -->
+    <!-- MODAL SECUNDARIO: LISTA DE HORARIOS OCUPADOS -->
     <div id="modal-horarios-ocupados"
         class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[70] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <div
@@ -223,6 +247,7 @@
         </div>
     </div>
 
+    <!-- Carga del script lógico principal -->
     <script src="js/main.js"></script>
 </body>
 

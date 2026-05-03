@@ -5,15 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - SportLogix</title>
+    <!-- Carga de Tailwind CSS para el diseño del panel -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-slate-50 font-sans">
 
     <div class="flex h-screen overflow-hidden">
+        
+        <!-- BARRA LATERAL (SIDEBAR) - Escritorio -->
         <aside class="w-64 bg-slate-900 text-white p-6 hidden md:block">
             <h2 class="text-2xl font-black mb-10 tracking-tighter uppercase text-emerald-500">SportLogix</h2>
             <nav class="space-y-4">
+                <!-- Enlaces de navegación del administrador -->
                 <a href="#" id="link-pistas"
                     class="link-admin flex items-center gap-3 bg-emerald-600 p-3 rounded-xl font-bold text-white transition">
                     <span>🏟️</span> Pistas
@@ -27,6 +31,7 @@
                     <span>📊</span> Estadísticas
                 </a>
                 <hr class="border-slate-800 my-6">
+                <!-- Enlace de retorno a la vista de usuario -->
                 <a href="index.html"
                     class="flex items-center gap-3 p-3 text-slate-400 hover:text-emerald-400 transition font-medium">
                     <span>🏠</span> Ver modo Usuario
@@ -34,8 +39,10 @@
             </nav>
         </aside>
 
+        <!-- CONTENIDO PRINCIPAL DEL PANEL -->
         <main class="flex-1 overflow-y-auto bg-slate-50 relative">
-            <!-- Menú Móvil Admin -->
+            
+            <!-- CABECERA MÓVIL (Solo visible en pantallas pequeñas) -->
             <div
                 class="md:hidden sticky top-0 z-50 bg-slate-900 text-white p-4 flex justify-between items-center shadow-md">
                 <div class="flex items-center gap-3">
@@ -50,6 +57,7 @@
                 </div>
             </div>
 
+            <!-- Menú Desplegable Móvil -->
             <div id="admin-mobile-menu"
                 class="hidden md:hidden bg-slate-800 text-white p-4 space-y-2 border-t border-slate-700">
                 <a href="#" id="link-mobile-pistas"
@@ -64,6 +72,7 @@
                     Ver modo Usuario</a>
             </div>
 
+            <!-- SECCIÓN 1: GESTIÓN DE INVENTARIO (PISTAS) -->
             <div id="seccion-inventario" class="p-6 md:p-8">
                 <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
                     <div>
@@ -71,25 +80,22 @@
                             Inventario</h1>
                         <p class="text-sm md:text-base text-slate-500">Panel de control de instalaciones</p>
                     </div>
+                    <!-- Botón para añadir nuevas pistas -->
                     <button id="btn-nueva-pista"
                         class="w-full md:w-auto justify-center bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-100 flex items-center gap-2">
                         <span class="text-xl">+</span> Nueva Pista
                     </button>
                 </header>
 
+                <!-- Tabla de Pistas -->
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-x-auto">
                     <table class="w-full text-left border-collapse min-w-[600px]">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
-                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre de la
-                                    Pista
-                                </th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre de la Pista</th>
                                 <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Deporte</th>
-                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
-                                    Estado
-                                    Actual</th>
-                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
-                                    Acciones</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Estado Actual</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-pistas-admin">
@@ -102,9 +108,9 @@
                     </table>
                 </div>
 
-            </div> <!-- End of seccion-inventario -->
+            </div> <!-- Fin de seccion-inventario -->
 
-            <!-- SECCIÓN: RESERVAS -->
+            <!-- SECCIÓN 2: GESTIÓN DE RESERVAS -->
             <div id="seccion-reservas" class="p-6 md:p-8 hidden">
                 <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                     <div>
@@ -114,12 +120,14 @@
                         </h2>
                         <p class="text-sm md:text-base text-slate-500">Consulta la ocupación por fecha</p>
                     </div>
+                    <!-- Filtro por fecha para las reservas -->
                     <div class="w-full md:w-auto">
                         <input type="date" id="filtro-fecha-admin"
                             class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition shadow-sm font-medium text-slate-700">
                     </div>
                 </header>
 
+                <!-- Tabla de Reservas -->
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-x-auto">
                     <table class="w-full text-left border-collapse min-w-[600px]">
                         <thead class="bg-slate-50 border-b border-slate-200">
@@ -127,8 +135,7 @@
                                 <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Hora</th>
                                 <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Pista</th>
                                 <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Usuario</th>
-                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
-                                    Estado</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Estado</th>
                             </tr>
                         </thead>
                         <tbody id="tabla-reservas-hoy">
@@ -142,7 +149,7 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN: ESTADÍSTICAS -->
+            <!-- SECCIÓN 3: ESTADÍSTICAS DEL NEGOCIO -->
             <div id="seccion-estadisticas" class="p-6 md:p-8 hidden">
                 <header class="flex justify-between items-center mb-8">
                     <div>
@@ -152,6 +159,7 @@
                         </h2>
                         <p class="text-sm md:text-base text-slate-500">Métricas globales de la plataforma</p>
                     </div>
+                    <!-- Selector de periodo de tiempo -->
                     <div class="w-full md:w-auto">
                         <select id="filtro-periodo-stats"
                             class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition shadow-sm font-medium text-slate-700">
@@ -163,8 +171,9 @@
                     </div>
                 </header>
 
+                <!-- Tarjetas de métricas rápidas -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Tarjeta 1 -->
+                    <!-- Métrica: Volumen de reservas -->
                     <div
                         class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col justify-center text-center">
                         <div class="text-5xl mb-2">🎟️</div>
@@ -172,7 +181,7 @@
                         <p id="stat-total-reservas" class="text-4xl font-black text-slate-800">...</p>
                     </div>
 
-                    <!-- Tarjeta 2 -->
+                    <!-- Métrica: Deporte con más demanda -->
                     <div
                         class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col justify-center text-center">
                         <div class="text-5xl mb-2">🔥</div>
@@ -180,7 +189,7 @@
                         <p id="stat-deporte-favorito" class="text-2xl font-black text-emerald-600">...</p>
                     </div>
 
-                    <!-- Tarjeta 3 -->
+                    <!-- Métrica: Instalación más utilizada -->
                     <div
                         class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col justify-center text-center">
                         <div class="text-5xl mb-2">⭐</div>
@@ -190,13 +199,14 @@
                 </div>
             </div>
 
+            <!-- PIE DE PÁGINA ADMIN -->
             <footer class="mt-10 text-center text-slate-400 text-xs">
                 <p>Panel de Administración - Desarrollado por David Raul Rus</p>
             </footer>
         </main>
     </div>
 
-    <!-- Modal de Confirmación para Cancelar Reserva -->
+    <!-- MODAL DE CONFIRMACIÓN: CANCELACIÓN DE RESERVA -->
     <div id="modal-cancelar-reserva"
         class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[70] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <div
@@ -221,6 +231,7 @@
         </div>
     </div>
 
+    <!-- Carga del script administrativo -->
     <script src="js/admin.js"></script>
 </body>
 

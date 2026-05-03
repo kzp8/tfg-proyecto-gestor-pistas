@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Obtener usuario del LocalStorage
+    // --- GESTIÓN DE SESIÓN DE USUARIO ---
+    
+    // Se recupera la información del usuario almacenada tras el login satisfactorio
     const usuarioJSON = localStorage.getItem('usuario');
 
+    // Redirección al login si no hay sesión activa
     if (!usuarioJSON) {
         window.location.href = 'login.html';
         return;
@@ -9,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const usuario = JSON.parse(usuarioJSON);
 
-    // Personalizar la interfaz con el nombre del usuario
+    // Personalización de la interfaz con los datos del usuario logueado
     const txtNombre = document.querySelectorAll('.nombre-usuario');
     const txtInicial = document.querySelectorAll('.inicial-usuario');
 
@@ -17,10 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
         txtNombre.forEach(el => el.textContent = usuario.nombre);
     }
     if (txtInicial.length > 0) {
+        // Se muestra la inicial del nombre en el círculo de perfil
         txtInicial.forEach(el => el.textContent = usuario.nombre.charAt(0).toUpperCase());
     }
 
-    // --- LÓGICA BOTÓN ADMIN ---
+    // --- LÓGICA DE ACCESO ADMINISTRATIVO ---
+    
+    // Si el usuario tiene rol de administrador, se le habilita el acceso al panel de gestión
     const contenedoresAdmin = document.querySelectorAll('.contenedor-admin');
     if (usuario.rol === 'admin' && contenedoresAdmin.length > 0) {
         contenedoresAdmin.forEach(contenedor => {
@@ -32,16 +38,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Cerrar Sesion
+    // Control del botón de cierre de sesión
     const btnsLogout = document.querySelectorAll('.btn-logout');
     btnsLogout.forEach(btn => {
         btn.addEventListener('click', () => {
-            localStorage.removeItem('usuario');
-            window.location.href = 'login.html';
+            localStorage.removeItem('usuario'); // Limpia los datos locales
+            window.location.href = 'login.html'; // Vuelve a la pantalla de entrada
         });
     });
 
-    // Menú móvil
+    // Control del menú hamburguesa para dispositivos móviles
     const btnMobileMenu = document.getElementById('btn-mobile-menu');
     const mobileMenu = document.getElementById('mobile-menu');
 
@@ -51,7 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- RESTRICCIÓN DE FECHAS (No permitir fechas pasadas) ---
+    // --- RESTRICCIÓN DE FECHAS EN CALENDARIOS ---
+    
+    // No se permite seleccionar fechas anteriores al día de hoy para reservas o búsquedas
     const dateInputs = document.querySelectorAll('input[type="date"]');
     if (dateInputs.length > 0) {
         const hoy = new Date();
@@ -65,7 +73,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // CARGAR PISTAS DINAMICAMENTE
+    // --- CARGA DINÁMICA DE INSTALACIONES (PISTAS) ---
+    
+    /**
+     * Función para obtener y renderizar las pistas desde la API.
+     * @param {string} filtroDeporte - Opcional. Filtra por tipo de deporte.
+     */
     async function cargarPistas(filtroDeporte = "") {
         const contenedor = document.getElementById('contenedor-pistas');
         if (!contenedor) return;
@@ -74,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const respuesta = await fetch('/api/pistas');
             let pistas = await respuesta.json();
 
-            // Filtrar por deporte si hay uno seleccionado
+            // Filtrado lógico según selección del usuario
             if (filtroDeporte && filtroDeporte !== "Todos los deportes" && filtroDeporte !== "") {
                 pistas = pistas.filter(pista => pista.tipo.toLowerCase().includes(filtroDeporte.toLowerCase()));
             }
@@ -86,8 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Renderizado de tarjetas de pista
             pistas.forEach(pista => {
-                let icono = '🎾';
+                let icono = '🎾'; // Icono por defecto (Tenis/Pádel)
                 const tipo = pista.tipo.toLowerCase();
                 if (tipo.includes('fútbol')) icono = '⚽';
                 else if (tipo.includes('baloncesto')) icono = '🏀';
@@ -122,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // LÓGICA DEL BUSCADOR
+    // --- ACCIÓN DEL BUSCADOR ---
     const btnBuscar = document.getElementById('btn-buscar');
     const filtroDeporte = document.getElementById('filtro-deporte');
     const filtroFecha = document.getElementById('filtro-fecha');
@@ -142,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Carga inicial de pistas al entrar a la página
     cargarPistas();
 
     // --- LÓGICA DEL MODAL DE RESERVAS ---
@@ -152,20 +167,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const txtModalNombre = document.getElementById('modal-pista-nombre');
     const divError = document.getElementById('reserva-error');
 
+    /**
+     * Prepara y muestra el modal de reserva para una pista específica.
+     */
     window.abrirModalReserva = (idPista, nombrePista) => {
         inputIdPista.value = idPista;
         txtModalNombre.textContent = nombrePista;
         divError.classList.add('hidden');
         
-        // Reset form
+        // Reinicio de campos del formulario
         document.getElementById('form-reserva').reset();
         
-        // Pre-rellenar fecha si se buscó antes
+        // Si el usuario venía de buscar una fecha concreta, la mantenemos en el modal
         if (window.fechaBuscador) {
             document.getElementById('reserva-fecha').value = window.fechaBuscador;
         }
 
-        // Reiniciar selectFin
+        // El select de fin depende del de inicio, se resetea por seguridad
         const selectFin = document.getElementById('reserva-fin');
         if (selectFin) {
             selectFin.innerHTML = '<option value="">Selecciona primero el inicio</option>';
@@ -185,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCancelarReserva.addEventListener('click', cerrarModalReserva);
     }
 
-    // Modal de Horarios Ocupados y Pista Llena
+    // --- CONSULTA DE DISPONIBILIDAD (OCUPACIÓN) ---
     const btnVerHorarios = document.getElementById('btn-ver-horarios');
     const modalHorariosOcupados = document.getElementById('modal-horarios-ocupados');
     const btnCerrarHorarios = document.getElementById('btn-cerrar-horarios');
@@ -207,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Cada vez que cambia la fecha en el modal, se consulta al servidor qué horas están ya reservadas
     if (inputFecha) {
         inputFecha.addEventListener('change', async () => {
             const fecha = inputFecha.value;
@@ -223,6 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 listaHorariosOcupados.innerHTML = '';
                 
+                // Si no hay reservas para esa fecha, informamos que está libre
                 if (reservas.length === 0) {
                     listaHorariosOcupados.innerHTML = '<li class="text-emerald-600 font-bold p-3 bg-emerald-50 rounded-xl text-center">¡Toda la pista está libre!</li>';
                     btnConfirmarReserva.disabled = false;
@@ -233,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // Calcular horas ocupadas y mostrar en lista
+                // Cálculo de horas ocupadas para bloquear el botón si la pista se llena por completo
                 let totalHorasOcupadas = 0;
 
                 reservas.forEach(r => {
@@ -246,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     totalHorasOcupadas += (hFin - hInicio);
                 });
 
-                // Son 12 horas totales (08-13 = 5h) + (15-22 = 7h) = 12h
+                // Lógica de pista completa (12 horas operativas al día)
                 if (totalHorasOcupadas >= 12) {
                     btnConfirmarReserva.disabled = true;
                     btnConfirmarReserva.textContent = "Pista Llena";
@@ -269,12 +289,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- LÓGICA DE SELECCIÓN DE HORA DE FIN ---
     const selectInicio = document.getElementById('reserva-inicio');
     const selectFin = document.getElementById('reserva-fin');
 
     if (selectInicio && selectFin) {
         selectInicio.addEventListener('change', () => {
-            selectFin.innerHTML = ''; // Limpiar opciones
+            selectFin.innerHTML = ''; // Limpiar opciones anteriores
 
             if (!selectInicio.value) {
                 selectFin.innerHTML = '<option value="">Selecciona primero el inicio</option>';
@@ -285,21 +306,18 @@ document.addEventListener('DOMContentLoaded', () => {
             selectFin.disabled = false;
             let horaInicio = parseInt(selectInicio.value.split(':')[0], 10);
 
-            // Opción 1: +1 hora
+            // Opción 1: Duración de 1 hora (+1h)
             let hora1 = horaInicio + 1;
-            // Para la hora de fin, la hora puede ser un número ocupado O la hora justo antes (ej si de 17 a 18 esta ocupado, a las 17:00 puede terminar)
-            // Esto implica que si está ocupado, no lo ofrecemos como selectInicio. Pero selectFin tiene que asegurarse de que no se superponga.
-            // Es más fácil que el selectFin solo valide:
-            if (hora1 !== 14 && hora1 !== 15 && hora1 <= 22) { // Evitar la pausa de 13 a 15, y no pasar de cierre
+            // Se valida no caer en horario de cierre o pausa
+            if (hora1 !== 14 && hora1 !== 15 && hora1 <= 22) {
                 const hora1Str = hora1.toString().padStart(2, '0') + ':00';
                 selectFin.innerHTML += `<option value="${hora1Str}">${hora1Str}</option>`;
             }
 
-            // Opción 2: +2 horas
+            // Opción 2: Duración de 2 horas (+2h)
             let hora2 = horaInicio + 2;
             if (hora2 !== 14 && hora2 !== 15 && hora2 <= 22) {
-                // Verificar si la +1 hora está ocupada en el selectInicio (si no está, es que está reservada)
-                // Si la hora +1 no está en las options de selectInicio (excluyendo el placeholder), no se puede hacer reserva de 2h
+                // Se verifica si la hora intermedia está disponible
                 let hora1Ocupada = true;
                 for (let i = 0; i < selectInicio.options.length; i++) {
                     if (selectInicio.options[i].value === (hora1.toString().padStart(2, '0') + ':00')) {
@@ -321,6 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- ENVÍO DEL FORMULARIO DE RESERVA ---
     if (formReserva) {
         formReserva.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -331,13 +350,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const hora_inicio = document.getElementById('reserva-inicio').value;
             const hora_fin = document.getElementById('reserva-fin').value;
 
+            // Validaciones finales antes del envío
             if (hora_inicio >= hora_fin) {
                 divError.textContent = "La hora de inicio debe ser anterior a la hora de fin.";
                 divError.classList.remove('hidden');
                 return;
             }
 
-            // Validación frontend de 2 horas
             const inicioMinutos = parseInt(hora_inicio.split(':')[0]) * 60 + parseInt(hora_inicio.split(':')[1]);
             const finMinutos = parseInt(hora_fin.split(':')[0]) * 60 + parseInt(hora_fin.split(':')[1]);
 
@@ -347,6 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Petición al servidor para guardar la reserva
             try {
                 const respuesta = await fetch('/api/reservas', {
                     method: 'POST',

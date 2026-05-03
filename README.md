@@ -4,21 +4,21 @@
 [![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-**SportLogix** es una aplicación web completa diseñada para la gestión eficiente de instalaciones deportivas. Permite a los usuarios reservar pistas en tiempo real y a los administradores gestionar el inventario, ver la ocupación y analizar estadísticas de uso.
+**SportLogix** es una aplicación web diseñada para la gestión eficiente de instalaciones deportivas. Permite a los usuarios reservar pistas en tiempo real y a los administradores gestionar pistas, ver la ocupación y analizar estadísticas de uso básicas.
 
 ## 🚀 Funcionalidades Principales
 
 ### Para Usuarios 👤
 *   **Registro y Login:** Acceso seguro a la plataforma.
-*   **Buscador Inteligente:** Filtro por tipo de deporte y fecha de juego.
-*   **Reservas en Tiempo Real:** Interfaz intuitiva para elegir slots de 1 hora.
+*   **Buscador:** Filtro por tipo de deporte y fecha de juego.
+*   **Reservas:** Interfaz intuitiva para elegir slots de 1 hora.
 *   **Gestión Personal:** Panel "Mis Reservas" para consultar y cancelar reservas.
-*   **Interfaz Responsiva:** Diseño adaptado a móviles y tablets.
+*   **Interfaz Responsive:** Diseño adaptado a móviles y tablets.
 
 ### Para Administradores ⚙️
 *   **Gestión de Pistas:** Crear, editar y eliminar pistas (Pádel, Fútbol 7, Baloncesto).
 *   **Control de Estado:** Poner pistas en "Mantenimiento" para bloquearlas.
-*   **Visor de Ocupación:** Calendario dinámico para ver quién reserva cada día y para cancelar reservas de forma remota.
+*   **Visor de Ocupación:** Calendario para ver las reservas de cada día y cancelar reservas.
 *   **Estadísticas Básicas:** Dashboard con filtros de tiempo (Hoy, Semana, Mes, Total).
 *   **Seguridad:** Panel protegido con control de roles.
 

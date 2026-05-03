@@ -5,11 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Reservas - SPORTLOGIX</title>
+    <!-- Carga de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-slate-50 font-sans text-slate-900">
 
+    <!-- BARRA DE NAVEGACIÓN (Consistente con index.html) -->
     <nav class="sticky top-0 z-50 bg-emerald-700 text-white shadow-md">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-4">
@@ -22,6 +24,7 @@
                     </svg>
                 </button>
 
+                <!-- Logotipo -->
                 <div class="flex items-center gap-2">
                     <div class="bg-white p-1 rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-700" fill="none"
@@ -37,11 +40,14 @@
             <!-- Navegación Escritorio -->
             <div class="hidden md:flex items-center gap-8 font-medium">
                 <a href="index.html" class="hover:text-emerald-200 transition">Inicio</a>
+                <!-- Enlace activo: Mis Reservas -->
                 <a href="mis-reservas.html" class="text-emerald-200 border-b-2 border-emerald-200 transition">Mis
                     Reservas</a>
 
+                <!-- Espacio para el botón de admin si corresponde -->
                 <div class="contenedor-admin"></div>
 
+                <!-- Perfil y Salir -->
                 <div class="flex items-center gap-3">
                     <div
                         class="h-9 w-9 bg-emerald-800 rounded-full flex items-center justify-center border-2 border-emerald-400 shadow-inner">
@@ -73,6 +79,7 @@
         </div>
     </nav>
 
+    <!-- CONTENIDO PRINCIPAL: HISTORIAL DE RESERVAS -->
     <main class="container mx-auto px-6 py-10 min-h-[70vh]">
         <div class="mb-12">
             <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">Mis Reservas</h1>
@@ -81,13 +88,16 @@
             </p>
         </div>
 
+        <!-- Contenedor dinámico donde se cargarán las tarjetas de reserva vía JavaScript -->
         <div id="contenedor-reservas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Mensaje de carga inicial -->
             <div class="col-span-full py-10 text-center text-slate-400 animate-pulse">
                 Cargando tu historial de reservas...
             </div>
         </div>
     </main>
 
+    <!-- PIE DE PÁGINA -->
     <footer class="mt-20 py-10 border-t border-slate-200 bg-white">
         <div class="container mx-auto px-6 text-center text-slate-400 text-sm font-medium">
             <p>TFG Desarrollo de Aplicaciones Web</p>
@@ -95,6 +105,7 @@
         </div>
     </footer>
 
+    <!-- Script específico para la gestión de las reservas del usuario -->
     <script src="js/mis-reservas.js"></script>
 </body>
 

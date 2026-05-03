@@ -1,20 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- SEGURIDAD: CONTROL DE ACCESO ---
+    // --- SEGURIDAD Y CONTROL DE ACCESO ---
+    
+    // Se verifica que el usuario esté logueado y tenga el rol de 'admin'
     const usuarioJSON = localStorage.getItem('usuario');
     const usuario = usuarioJSON ? JSON.parse(usuarioJSON) : null;
 
     if (!usuario || usuario.rol !== 'admin') {
         alert("Acceso denegado: Se requieren permisos de administrador.");
-        window.location.href = 'index.html';
+        window.location.href = 'index.html'; // Redirección si no es admin
         return;
     }
 
+    // Referencias a elementos del DOM principales
     const tabla = document.getElementById('tabla-pistas-admin');
     const seccionInventario = document.getElementById('seccion-inventario');
     const seccionReservas = document.getElementById('seccion-reservas');
     const seccionEstadisticas = document.getElementById('seccion-estadisticas');
 
-    // --- Lógica Menú Móvil Admin ---
+    // --- MENÚ MÓVIL ADMINISTRATIVO ---
     const btnAdminMobileMenu = document.getElementById('btn-admin-mobile-menu');
     const adminMobileMenu = document.getElementById('admin-mobile-menu');
     
@@ -24,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- NAVEGACIÓN POR PESTAÑAS ---
+    // --- NAVEGACIÓN ENTRE SECCIONES DEL PANEL (PESTAÑAS) ---
     const linkPistas = document.getElementById('link-pistas');
     const linkReservas = document.getElementById('link-reservas');
     const linkEstadisticas = document.getElementById('link-estadisticas');
@@ -32,8 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const linkMobileReservas = document.getElementById('link-mobile-reservas');
     const linkMobileEstadisticas = document.getElementById('link-mobile-estadisticas');
 
+    /**
+     * Gestiona el cambio de vista entre Inventario, Reservas y Estadísticas.
+     */
     function activarPestaña(pestaña) {
-        // Reset styles (Desktop + Mobile)
+        // Limpiar estilos de todos los enlaces de navegación
         const allLinks = [linkPistas, linkMobilePistas, linkReservas, linkMobileReservas, linkEstadisticas, linkMobileEstadisticas];
         allLinks.forEach(el => {
             if(el) {
@@ -42,11 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Ocultar todas las secciones
+        // Ocultar todas las secciones de contenido
         if(seccionInventario) seccionInventario.classList.add('hidden');
         if(seccionReservas) seccionReservas.classList.add('hidden');
         if(seccionEstadisticas) seccionEstadisticas.classList.add('hidden');
 
+        // Activar la sección correspondiente y cargar sus datos
         if (pestaña === 'pistas') {
             [linkPistas, linkMobilePistas].forEach(el => {
                 if(el) { el.classList.add('bg-emerald-600', 'text-white', 'font-bold'); el.classList.remove('text-slate-400'); }
@@ -58,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if(seccionReservas) seccionReservas.classList.remove('hidden');
             
+            // Carga inicial de reservas con la fecha actual
             const inputFecha = document.getElementById('filtro-fecha-admin');
             if (inputFecha) {
                 if(!inputFecha.value) inputFecha.value = new Date().toISOString().split('T')[0];
@@ -69,13 +77,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if(seccionEstadisticas) seccionEstadisticas.classList.remove('hidden');
             
+            // Carga inicial de estadísticas (Histórico Total por defecto)
             const selectPeriodo = document.getElementById('filtro-periodo-stats');
             cargarEstadisticas(selectPeriodo ? selectPeriodo.value : 'total');
         }
         
+        // Cerrar menú móvil automáticamente tras seleccionar pestaña
         if (adminMobileMenu) adminMobileMenu.classList.add('hidden');
     }
 
+    // Eventos de clic para todos los enlaces de navegación
     if (linkPistas) linkPistas.onclick = (e) => { e.preventDefault(); activarPestaña('pistas'); };
     if (linkMobilePistas) linkMobilePistas.onclick = (e) => { e.preventDefault(); activarPestaña('pistas'); };
     if (linkReservas) linkReservas.onclick = (e) => { e.preventDefault(); activarPestaña('reservas'); };
@@ -83,12 +94,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (linkEstadisticas) linkEstadisticas.onclick = (e) => { e.preventDefault(); activarPestaña('estadisticas'); };
     if (linkMobileEstadisticas) linkMobileEstadisticas.onclick = (e) => { e.preventDefault(); activarPestaña('estadisticas'); };
 
-    // 1. Cargar las pistas desde la base de datos con ORDENACIÓN
+    // --- GESTIÓN DE INVENTARIO (CRUD PISTAS) ---
+
+    /**
+     * Obtiene las pistas del servidor y las renderiza ordenadas por deporte y nombre.
+     */
     async function cargarPistasAdmin() {
         try {
             const respuesta = await fetch('/api/pistas');
             let pistas = await respuesta.json();
 
+            // Lógica de ordenación: Primero por tipo de deporte predefinido, luego alfabéticamente
             const ordenDeportes = { 'Pádel': 1, 'Fútbol 7': 2, 'Baloncesto': 3 };
             pistas.sort((a, b) => {
                 const pesoA = ordenDeportes[a.tipo] || 99;
@@ -123,6 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Alterna entre estado 'Activa' y 'En Mantenimiento'.
+     */
     window.cambiarEstado = async (id, estadoActual) => {
         const nuevoEstado = estadoActual === 1 ? 0 : 1;
         await fetch(`/api/pistas/estado/${id}`, {
@@ -133,6 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
         cargarPistasAdmin();
     };
 
+    /**
+     * Elimina definitivamente una instalación tras confirmación.
+     */
     window.eliminarPista = async (id) => {
         if (confirm('¿Estás seguro de eliminar esta instalación?')) {
             await fetch(`/api/pistas/eliminar/${id}`, { method: 'DELETE' });
@@ -140,7 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- SECCIÓN: RESERVAS POR FECHA ---
+    // --- GESTIÓN DE RESERVAS EN PANEL ADMIN ---
+    
     const tablaReservasHoy = document.getElementById('tabla-reservas-hoy');
     const inputFechaAdmin = document.getElementById('filtro-fecha-admin');
 
@@ -150,6 +173,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /**
+     * Carga las reservas registradas para una fecha específica.
+     */
     async function cargarReservasAdmin(fechaStr) {
         if (!tablaReservasHoy || !fechaStr) return;
         try {
@@ -183,7 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- SECCIÓN: ESTADÍSTICAS ---
+    // --- PANEL DE ESTADÍSTICAS ---
+    
     const selectPeriodo = document.getElementById('filtro-periodo-stats');
     if (selectPeriodo) {
         selectPeriodo.addEventListener('change', (e) => {
@@ -191,12 +218,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /**
+     * Obtiene métricas de uso (total reservas, deporte favorito, pista más usada).
+     * @param {string} periodo - 'dia', 'semana', 'mes' o 'total'.
+     */
     async function cargarEstadisticas(periodo = 'total') {
         const txtTotal = document.getElementById('stat-total-reservas');
         const txtDeporte = document.getElementById('stat-deporte-favorito');
         const txtPista = document.getElementById('stat-pista-estrella');
 
-        // Ponemos puntos suspensivos mientras carga para dar feedback
+        // Efecto visual de carga
         if (txtTotal) txtTotal.textContent = '...';
         if (txtDeporte) txtDeporte.textContent = '...';
         if (txtPista) txtPista.textContent = '...';
@@ -205,6 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const respuesta = await fetch(`/api/admin/estadisticas?periodo=${periodo}`);
             const data = await respuesta.json();
 
+            // Inserción de resultados en las tarjetas
             if (txtTotal) txtTotal.textContent = data.total_reservas;
             if (txtDeporte) txtDeporte.textContent = data.deporte_favorito;
             if (txtPista) txtPista.textContent = data.pista_estrella;
@@ -213,7 +245,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- CANCELACIÓN CON MODAL ---
+    // --- CANCELACIÓN DE RESERVAS (MODAL DE CONFIRMACIÓN) ---
+    
     const modalCancelarReserva = document.getElementById('modal-cancelar-reserva');
     const btnCerrarModalCancelar = document.getElementById('btn-cerrar-modal-cancelar');
     const btnConfirmarModalCancelar = document.getElementById('btn-confirmar-modal-cancelar');
@@ -245,7 +278,11 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // --- EDICIÓN Y CREACIÓN ---
+    // --- FORMULARIOS DINÁMICOS: EDICIÓN Y CREACIÓN DE PISTAS ---
+
+    /**
+     * Genera un modal al vuelo para editar nombre y tipo de una pista.
+     */
     window.abrirModalEdicion = (id, nombreActual, tipoActual) => {
         const modalOverlay = document.createElement('div');
         modalOverlay.className = "fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50";
@@ -281,6 +318,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
+    /**
+     * Genera un modal al vuelo para añadir una nueva pista al sistema.
+     */
     const btnNueva = document.getElementById('btn-nueva-pista');
     if (btnNueva) {
         btnNueva.onclick = () => {
@@ -321,5 +361,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // Inicialización del panel cargando las pistas existentes
     cargarPistasAdmin();
 });

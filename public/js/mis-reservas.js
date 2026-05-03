@@ -1,19 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. OBTENER Y VERIFICAR USUARIO
+    // --- 1. VERIFICACIÓN DE SESIÓN ---
+    
+    // Se recupera el usuario del LocalStorage para asegurar que está logueado
     const usuarioJSON = localStorage.getItem('usuario');
     if (!usuarioJSON) {
-        window.location.href = 'login.html';
+        window.location.href = 'login.html'; // Redirección si no hay sesión
         return;
     }
     const usuario = JSON.parse(usuarioJSON);
 
-    // 2. CONFIGURAR INTERFAZ
+    // --- 2. PERSONALIZACIÓN DE LA INTERFAZ ---
+    
+    // Inserción de nombre e inicial del usuario en el menú
     const txtIniciales = document.querySelectorAll('.inicial-usuario');
     const txtNombres = document.querySelectorAll('.nombre-usuario');
     
     txtIniciales.forEach(el => el.textContent = usuario.nombre.charAt(0).toUpperCase());
     txtNombres.forEach(el => el.textContent = usuario.nombre);
 
+    // Si el usuario es administrador, se le muestra el acceso al panel técnico
     const contenedoresAdmin = document.querySelectorAll('.contenedor-admin');
     if (usuario.rol === 'admin') {
         contenedoresAdmin.forEach(contenedor => {
@@ -25,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Configuración del botón de cierre de sesión
     const btnsLogout = document.querySelectorAll('.btn-logout');
     btnsLogout.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -33,9 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 3. CARGAR RESERVAS
+    // --- 3. CARGA DINÁMICA DE RESERVAS ---
+    
     const contenedorReservas = document.getElementById('contenedor-reservas');
 
+    /**
+     * Obtiene las reservas del usuario actual desde la API y las renderiza como tarjetas.
+     */
     async function cargarMisReservas() {
         if (!contenedorReservas) return;
 
@@ -47,8 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const reservas = await respuesta.json();
-            contenedorReservas.innerHTML = '';
+            contenedorReservas.innerHTML = ''; // Limpiar mensaje de carga
 
+            // Caso: El usuario no tiene reservas todavía
             if (reservas.length === 0) {
                 contenedorReservas.innerHTML = `
                     <div class="col-span-full py-20 text-center">
@@ -61,7 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            // Renderizado de cada reserva
             reservas.forEach(reserva => {
+                // Lógica de iconos según el deporte
                 let icono = '🎾';
                 let tipo = 'Pista';
                 
@@ -72,12 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     else if (tipoLower.includes('baloncesto')) icono = '🏀';
                 }
 
+                // Formateo de fecha para que sea legible (ej: lunes, 5 de mayo)
                 let fechaFormateada = reserva.fecha;
                 if (reserva.fecha) {
                     const fechaDate = new Date(reserva.fecha);
                     fechaFormateada = fechaDate.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
                 }
 
+                // Limpieza de formato de hora (quitar segundos)
                 let horaIn = "00:00";
                 if (reserva.hora_inicio && typeof reserva.hora_inicio === 'string') {
                     horaIn = reserva.hora_inicio.substring(0, 5);
@@ -88,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     horaFin = reserva.hora_fin.substring(0, 5);
                 }
 
+                // Creación de la tarjeta (Card) con Tailwind
                 const card = document.createElement('div');
                 card.className = "bg-white rounded-3xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between hover:shadow-xl transition-shadow duration-300 relative overflow-hidden";
 
@@ -122,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                     
+                    <!-- Botón de cancelación -->
                     <button onclick="cancelarReserva(${reserva.id})" class="w-full mt-8 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 py-3 rounded-xl font-bold transition relative z-10 group">
                         <span class="group-hover:hidden">Cancelar Reserva</span>
                         <span class="hidden group-hover:block">¿Estás seguro?</span>
@@ -138,7 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. CANCELAR RESERVAS
+    // --- 4. CANCELACIÓN DE RESERVAS ---
+
+    /**
+     * Elimina una reserva del sistema tras confirmación del usuario.
+     */
     window.cancelarReserva = async (idReserva) => {
         if (!confirm("¿Seguro que deseas cancelar esta reserva de forma permanente?")) return;
 
@@ -149,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (respuesta.ok) {
                 alert("Reserva cancelada correctamente.");
-                cargarMisReservas();
+                cargarMisReservas(); // Refrescar el listado automáticamente
             } else {
                 alert("Error al cancelar la reserva en el servidor.");
             }
@@ -159,9 +180,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Inicialización de la carga de datos
     cargarMisReservas();
 
-    const btnMenu = document.getElementById('btn-menu');
+    // Lógica del menú móvil (Abrir/Cerrar)
+    const btnMenu = document.getElementById('btn-mobile-menu');
     const mobileMenu = document.getElementById('mobile-menu');
     if (btnMenu && mobileMenu) {
         btnMenu.addEventListener('click', () => {
@@ -169,3 +192,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+

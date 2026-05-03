@@ -5,13 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SportLogix</title>
+    <!-- Carga de Tailwind CSS para el diseño -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-slate-100 h-screen flex items-center justify-center font-sans">
 
+    <!-- CONTENEDOR PRINCIPAL: FORMULARIO DE ACCESO -->
     <div class="bg-white p-10 rounded-3xl shadow-xl w-full max-w-md border border-slate-200">
         <div class="text-center mb-10">
+            <!-- Icono Decorativo -->
             <div class="inline-block bg-emerald-600 p-3 rounded-2xl mb-4 shadow-lg shadow-emerald-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
@@ -19,10 +22,12 @@
                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
             </div>
+            <!-- Logotipo y lema -->
             <h1 class="text-3xl font-black text-slate-800 tracking-tight uppercase">SportLogix</h1>
             <p class="text-slate-500 font-medium mt-1">Gestión de Pistas Deportivas</p>
         </div>
 
+        <!-- Formulario de Login -->
         <form id="form-login" class="space-y-6">
             <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">Correo Electrónico</label>
@@ -36,12 +41,14 @@
                     class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition">
             </div>
 
+            <!-- Botón de Envío -->
             <button type="submit"
                 class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-200 transition transform hover:-translate-y-0.5">
                 Iniciar Sesión
             </button>
         </form>
 
+        <!-- Opción para abrir el registro -->
         <div class="mt-8 text-center">
             <p class="text-sm text-slate-500">¿No tienes cuenta?
                 <button id="btn-abrir-registro" class="text-emerald-600 font-bold hover:underline ml-1">Regístrate
@@ -50,14 +57,17 @@
         </div>
     </div>
 
+    <!-- MODAL DE REGISTRO (Oculto por defecto) -->
     <div id="modal-registro"
         class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-200 relative">
+            <!-- Botón de Cerrar Modal -->
             <button id="btn-cerrar-registro"
                 class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
 
             <h2 class="text-2xl font-black text-slate-800 uppercase mb-6">Crea tu cuenta</h2>
 
+            <!-- Formulario de Registro -->
             <form id="form-registro" class="space-y-4">
                 <input type="text" id="reg-nombre" placeholder="Nombre completo" required
                     class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none">
@@ -74,6 +84,7 @@
         </div>
     </div>
 
+    <!-- Carga del script de autenticación -->
     <script src="js/auth.js"></script>
 </body>
 
