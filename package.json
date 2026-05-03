@@ -1,0 +1,16 @@
+{
+  "name": "sportlogix-gestor-pistas",
+  "version": "1.0.0",
+  "description": "Plataforma de gestión y reserva de pistas polideportivas",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "author": "David Raul Rus",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mysql2": "^3.20.0"
+  }
+}

@@ -1,0 +1,10 @@
+# Dependencias
+node_modules/
+package-lock.json
+
+# IDEs y otros
+.vscode/
+.idea/
+.DS_Store
+*.log
+.env

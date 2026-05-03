@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - SportLogix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-50 font-sans">
+
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-slate-900 text-white p-6 hidden md:block">
+            <h2 class="text-2xl font-black mb-10 tracking-tighter uppercase text-emerald-500">SportLogix</h2>
+            <nav class="space-y-4">
+                <a href="#" id="link-pistas"
+                    class="link-admin flex items-center gap-3 bg-emerald-600 p-3 rounded-xl font-bold text-white transition">
+                    <span>🏟️</span> Pistas
+                </a>
+                <a href="#" id="link-reservas"
+                    class="link-admin flex items-center gap-3 p-3 text-slate-400 hover:text-white transition">
+                    <span>📅</span> Reservas
+                </a>
+                <a href="#" id="link-estadisticas"
+                    class="link-admin flex items-center gap-3 p-3 text-slate-400 hover:text-white transition">
+                    <span>📊</span> Estadísticas
+                </a>
+                <hr class="border-slate-800 my-6">
+                <a href="index.html"
+                    class="flex items-center gap-3 p-3 text-slate-400 hover:text-emerald-400 transition font-medium">
+                    <span>🏠</span> Ver modo Usuario
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto bg-slate-50 relative">
+            <!-- Menú Móvil Admin -->
+            <div
+                class="md:hidden sticky top-0 z-50 bg-slate-900 text-white p-4 flex justify-between items-center shadow-md">
+                <div class="flex items-center gap-3">
+                    <button id="btn-admin-mobile-menu"
+                        class="text-white focus:outline-none hover:text-emerald-400 transition">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <span class="text-lg font-black tracking-tighter uppercase text-emerald-500">SportLogix</span>
+                </div>
+            </div>
+
+            <div id="admin-mobile-menu"
+                class="hidden md:hidden bg-slate-800 text-white p-4 space-y-2 border-t border-slate-700">
+                <a href="#" id="link-mobile-pistas"
+                    class="link-admin-mobile block bg-emerald-600 p-3 rounded-xl font-bold text-white transition">🏟️
+                    Pistas</a>
+                <a href="#" id="link-mobile-reservas"
+                    class="link-admin-mobile block p-3 text-slate-400 hover:text-white transition">📅 Reservas</a>
+                <a href="#" id="link-mobile-estadisticas"
+                    class="link-admin-mobile block p-3 text-slate-400 hover:text-white transition">📊 Estadísticas</a>
+                <hr class="border-slate-700 my-2">
+                <a href="index.html" class="block p-3 text-slate-400 hover:text-emerald-400 transition font-medium">🏠
+                    Ver modo Usuario</a>
+            </div>
+
+            <div id="seccion-inventario" class="p-6 md:p-8">
+                <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">Gestión de
+                            Inventario</h1>
+                        <p class="text-sm md:text-base text-slate-500">Panel de control de instalaciones</p>
+                    </div>
+                    <button id="btn-nueva-pista"
+                        class="w-full md:w-auto justify-center bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition shadow-lg shadow-emerald-100 flex items-center gap-2">
+                        <span class="text-xl">+</span> Nueva Pista
+                    </button>
+                </header>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre de la
+                                    Pista
+                                </th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Deporte</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
+                                    Estado
+                                    Actual</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
+                                    Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-pistas-admin">
+                            <tr>
+                                <td colspan="4" class="p-10 text-center text-slate-400 animate-pulse">
+                                    Cargando inventario de SportLogix...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div> <!-- End of seccion-inventario -->
+
+            <!-- SECCIÓN: RESERVAS -->
+            <div id="seccion-reservas" class="p-6 md:p-8 hidden">
+                <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <h2
+                            class="text-xl md:text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2">
+                            <span class="text-emerald-500">📅</span> Reservas
+                        </h2>
+                        <p class="text-sm md:text-base text-slate-500">Consulta la ocupación por fecha</p>
+                    </div>
+                    <div class="w-full md:w-auto">
+                        <input type="date" id="filtro-fecha-admin"
+                            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition shadow-sm font-medium text-slate-700">
+                    </div>
+                </header>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Hora</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Pista</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Usuario</th>
+                                <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
+                                    Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-reservas-hoy">
+                            <tr>
+                                <td colspan="4" class="p-10 text-center text-slate-400 animate-pulse">
+                                    Cargando reservas...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: ESTADÍSTICAS -->
+            <div id="seccion-estadisticas" class="p-6 md:p-8 hidden">
+                <header class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2
+                            class="text-xl md:text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2">
+                            <span class="text-emerald-500">📊</span> Panel de Estadísticas
+                        </h2>
+                        <p class="text-sm md:text-base text-slate-500">Métricas globales de la plataforma</p>
+                    </div>
+                    <div class="w-full md:w-auto">
+                        <select id="filtro-periodo-stats"
+                            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition shadow-sm font-medium text-slate-700">
+                            <option value="total">Histórico Total</option>
+                            <option value="dia">Último Día</option>
+                            <option value="semana">Última Semana</option>
+                            <option value="mes">Último Mes</option>
+                        </select>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Tarjeta 1 -->
+                    <div
+                        class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col justify-center text-center">
+                        <div class="text-5xl mb-2">🎟️</div>
+                        <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Total Reservas</p>
+                        <p id="stat-total-reservas" class="text-4xl font-black text-slate-800">...</p>
+                    </div>
+
+                    <!-- Tarjeta 2 -->
+                    <div
+                        class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col justify-center text-center">
+                        <div class="text-5xl mb-2">🔥</div>
+                        <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Deporte Favorito</p>
+                        <p id="stat-deporte-favorito" class="text-2xl font-black text-emerald-600">...</p>
+                    </div>
+
+                    <!-- Tarjeta 3 -->
+                    <div
+                        class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 flex flex-col justify-center text-center">
+                        <div class="text-5xl mb-2">⭐</div>
+                        <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Pista Estrella</p>
+                        <p id="stat-pista-estrella" class="text-2xl font-black text-amber-500">...</p>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="mt-10 text-center text-slate-400 text-xs">
+                <p>Panel de Administración - Desarrollado por David Raul Rus</p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modal de Confirmación para Cancelar Reserva -->
+    <div id="modal-cancelar-reserva"
+        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[70] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-6 transform scale-95 transition-transform duration-300">
+            <h3 class="text-xl font-bold text-slate-800 mb-2 flex items-center gap-2">
+                <span class="text-red-500">⚠️</span> Cancelar Reserva
+            </h3>
+            <p class="text-sm text-slate-500 mb-6">
+                ¿Estás seguro de que quieres CANCELAR esta reserva? Esta acción eliminará la reserva y dejará la pista
+                libre. No se puede deshacer.
+            </p>
+            <div class="flex gap-2">
+                <button type="button" id="btn-cerrar-modal-cancelar"
+                    class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl transition text-xs">
+                    Atrás
+                </button>
+                <button type="button" id="btn-confirmar-modal-cancelar"
+                    class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition text-xs">
+                    Sí, Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+
+</html>
