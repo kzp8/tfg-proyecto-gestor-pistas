@@ -361,6 +361,117 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    // --- GESTIÓN DE RESERVA FORZADA (ADMIN MANUAL) ---
+
+    const btnReservaForzada = document.getElementById('btn-reserva-forzada');
+    const modalReservaForzada = document.getElementById('modal-reserva-forzada');
+    const btnCerrarModalRF = document.getElementById('btn-cerrar-modal-rf');
+    const formReservaForzada = document.getElementById('form-reserva-forzada');
+    const selectRFUsuario = document.getElementById('rf-usuario');
+    const selectRFPista = document.getElementById('rf-pista');
+
+    if (btnReservaForzada) {
+        btnReservaForzada.onclick = async () => {
+            // Abrir modal
+            if (modalReservaForzada) {
+                modalReservaForzada.classList.remove('hidden');
+                setTimeout(() => modalReservaForzada.classList.remove('opacity-0'), 10);
+            }
+
+            // Cargar usuarios y pistas para los selectores
+            cargarSelectoresRF();
+        };
+    }
+
+    if (btnCerrarModalRF) {
+        btnCerrarModalRF.onclick = () => cerrarModalRF();
+    }
+
+    function cerrarModalRF() {
+        if (modalReservaForzada) {
+            modalReservaForzada.classList.add('opacity-0');
+            setTimeout(() => modalReservaForzada.classList.add('hidden'), 300);
+            formReservaForzada.reset();
+        }
+    }
+
+    /**
+     * Obtiene usuarios y pistas y rellena los campos select del modal.
+     */
+    async function cargarSelectoresRF() {
+        try {
+            // Fetch Usuarios
+            const resUsers = await fetch('/api/admin/usuarios');
+            const users = await resUsers.json();
+            if (selectRFUsuario) {
+                selectRFUsuario.innerHTML = '<option value="" disabled selected>Selecciona un usuario...</option>';
+                users.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.textContent = `${u.nombre} (${u.email})`;
+                    selectRFUsuario.appendChild(opt);
+                });
+            }
+
+            // Fetch Pistas
+            const resPistas = await fetch('/api/pistas');
+            const pistas = await resPistas.json();
+            if (selectRFPista) {
+                selectRFPista.innerHTML = '<option value="" disabled selected>Selecciona una pista...</option>';
+                pistas.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.nombre;
+                    selectRFPista.appendChild(opt);
+                });
+            }
+        } catch (error) {
+            console.error("Error cargando selectores de reserva forzada:", error);
+        }
+    }
+
+    if (formReservaForzada) {
+        formReservaForzada.onsubmit = async (e) => {
+            e.preventDefault();
+
+            const datos = {
+                id_usuario: document.getElementById('rf-usuario').value,
+                id_pista: document.getElementById('rf-pista').value,
+                fecha: document.getElementById('rf-fecha').value,
+                hora_inicio: document.getElementById('rf-hora-inicio').value,
+                hora_fin: document.getElementById('rf-hora-fin').value
+            };
+
+            try {
+                const respuesta = await fetch('/api/admin/reservas/forzar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+
+                const resultado = await respuesta.json();
+
+                if (respuesta.ok) {
+                    alert("✅ Reserva forzada creada con éxito.");
+                    cerrarModalRF();
+                    // Recargar tabla si la fecha coincide
+                    const f = document.getElementById('filtro-fecha-admin');
+                    if (f && f.value === datos.fecha) {
+                        cargarReservasAdmin(f.value);
+                    } else if (f) {
+                        f.value = datos.fecha;
+                        cargarReservasAdmin(f.value);
+                    }
+                } else {
+                    alert(`❌ Error: ${resultado.mensaje}`);
+                }
+            } catch (error) {
+                console.error("Error al crear reserva forzada:", error);
+                alert("Ocurrió un error inesperado al procesar la reserva.");
+            }
+        };
+    }
+
     // Inicialización del panel cargando las pistas existentes
     cargarPistasAdmin();
 });

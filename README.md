@@ -61,7 +61,7 @@ Para acceder al panel de administración:
 *   **Email:** `admin@admin.com`
 *   **Contraseña:** `admin`
 
-Para acceder al panel de administración:
+Para acceder al panel de usuario:
 *   **Email:** `davidraulrus2006@gmail.com`
 *   **Contraseña:** `davidraulrus2006@gmail.com`
 

@@ -221,6 +221,46 @@ app.get('/api/admin/estadisticas', (req, res) => {
 });
 
 /**
+ * Obtiene la lista de todos los usuarios registrados (para selección en reserva forzada).
+ */
+app.get('/api/admin/usuarios', (req, res) => {
+    const sql = 'SELECT id, nombre, email FROM usuarios ORDER BY nombre ASC';
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ mensaje: "Error al obtener usuarios" });
+        res.json(results);
+    });
+});
+
+/**
+ * Crea una reserva manual (forzada) saltándose las restricciones de horario y duración.
+ */
+app.post('/api/admin/reservas/forzar', (req, res) => {
+    const { id_usuario, id_pista, fecha, hora_inicio, hora_fin } = req.body;
+
+    // Solo se valida la disponibilidad (solapamiento)
+    const sqlCheck = `
+        SELECT * FROM reservas 
+        WHERE id_pista = ? AND fecha = ? 
+        AND hora_inicio < ? AND hora_fin > ?
+    `;
+
+    db.query(sqlCheck, [id_pista, fecha, hora_fin, hora_inicio], (err, results) => {
+        if (err) return res.status(500).json({ mensaje: "Error al verificar disponibilidad" });
+
+        if (results.length > 0) {
+            return res.status(409).json({ mensaje: "La pista ya está reservada en ese horario (solapamiento)" });
+        }
+
+        const sqlInsert = 'INSERT INTO reservas (id_usuario, id_pista, fecha, hora_inicio, hora_fin) VALUES (?, ?, ?, ?, ?)';
+        db.query(sqlInsert, [id_usuario, id_pista, fecha, hora_inicio, hora_fin], (err, result) => {
+            if (err) return res.status(500).json({ mensaje: "Error al crear la reserva forzada" });
+            res.json({ mensaje: "Reserva forzada creada con éxito", idReserva: result.insertId });
+        });
+    });
+});
+
+
+/**
  * Crea una nueva reserva validando horarios, duración y disponibilidad.
  */
 app.post('/api/reservas', (req, res) => {
