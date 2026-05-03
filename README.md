@@ -16,10 +16,10 @@
 *   **Interfaz Responsiva:** Diseño adaptado a móviles y tablets.
 
 ### Para Administradores ⚙️
-*   **Gestión de Inventario:** Alta, baja y edición de pistas (Pádel, Fútbol 7, Baloncesto).
+*   **Gestión de Pistas:** Crear, editar y eliminar pistas (Pádel, Fútbol 7, Baloncesto).
 *   **Control de Estado:** Poner pistas en "Mantenimiento" para bloquearlas.
-*   **Visor de Ocupación:** Calendario dinámico para ver quién reserva cada día.
-*   **Estadísticas Avanzadas:** Dashboard con filtros de tiempo (Hoy, Semana, Mes, Total).
+*   **Visor de Ocupación:** Calendario dinámico para ver quién reserva cada día y para cancelar reservas de forma remota.
+*   **Estadísticas Básicas:** Dashboard con filtros de tiempo (Hoy, Semana, Mes, Total).
 *   **Seguridad:** Panel protegido con control de roles.
 
 ## 🛠️ Tecnologías Utilizadas
