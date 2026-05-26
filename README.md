@@ -18,7 +18,9 @@
 ### Para Administradores ⚙️
 *   **Gestión de Pistas:** Crear, editar y eliminar pistas (Pádel, Fútbol 7, Baloncesto).
 *   **Control de Estado:** Poner pistas en "Mantenimiento" para bloquearlas.
-*   **Visor de Ocupación:** Calendario para ver las reservas de cada día y cancelar reservas.
+*   **Control de Estado:** Boton para crear reservas
+*   **Visor de Ocupación:** Calendario para ver las reservas de cada día y cancelar 
+reservas.
 *   **Estadísticas Básicas:** Dashboard con filtros de tiempo (Hoy, Semana, Mes, Total).
 *   **Seguridad:** Panel protegido con control de roles.
 
