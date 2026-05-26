@@ -6,6 +6,33 @@
 
 **SportLogix** es una aplicación web diseñada para la gestión eficiente de instalaciones deportivas. Permite a los usuarios reservar pistas en tiempo real y a los administradores gestionar pistas, ver la ocupación y analizar estadísticas de uso básicas.
 
+---
+
+## 📸 Capturas de Pantalla
+
+### Página de Inicio
+![Página de inicio](https://github.com/user-attachments/assets/6ec1dbe9-e6d0-43c9-9c34-77d2ff6ee2b6)
+
+### Modal de Confirmar Reserva
+![Modal confirmar reserva](https://github.com/user-attachments/assets/51cadd9d-8b44-42db-b684-b42b9cf561d2)
+
+### Página de Reservas
+![Página de reservas](https://github.com/user-attachments/assets/0590963b-a7a1-4ec7-905f-af8a9070229f)
+
+### Panel de Administrador — Gestión de Pistas
+![Gestión de pistas](https://github.com/user-attachments/assets/e519c004-90e0-498f-b5bd-82c9e720ad8f)
+
+### Panel de Administrador — Crear Pista
+![Modal creación de pista](https://github.com/user-attachments/assets/9a3b2813-2478-456f-9a10-d03623040774)
+
+### Panel de Administrador — Reservas
+![Reservas admin](https://github.com/user-attachments/assets/430edfbb-ed57-46e6-bf29-bf2daab2e377)
+
+### Panel de Administrador — Estadísticas
+![Estadísticas básicas](https://github.com/user-attachments/assets/15555a04-379a-4358-a5ef-33494f645eb6)
+
+---
+
 ## 🚀 Funcionalidades Principales
 
 ### Para Usuarios 👤
